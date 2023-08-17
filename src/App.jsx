@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import Searchbar from "./components/Searchbar";
 import TodoList from "./components/TodoList";
 import CreateTodos from "./components/CreateTodos";
 import Footer from "./components/Footer";
@@ -14,6 +15,8 @@ function App() {
     const storedTodos = JSON.parse(localStorage.getItem("todos"));
     return storedTodos || [];
   })
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   // functions
   const switchThemes = () => {
@@ -50,6 +53,14 @@ function App() {
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
   };
 
+  const handleSearch = query => {
+    setSearchQuery(query);
+  };
+
+  const filteredTodos = todos.filter(todo => {
+    return todo.text.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   useEffect(() => {
     console.log("Retrieving todos from localStorage...", localStorage.getItem("todos", "isDarkMode"));
     const storedTodos = JSON.parse(localStorage.getItem("todos"));
@@ -72,8 +83,9 @@ function App() {
     <div className={`${darkMode ? "dark" : ""} bg-slate-200 dark:bg-black min-h-screen flex justify-center items-center flex-col md:px-3`}>
       <Header switchThemes={switchThemes} darkMode={darkMode} />
       <main className="flex flex-col items-center justify-center max-w-3xl w-full">
+        <Searchbar handleSearch={handleSearch} />
         <TodoList
-          todos={todos}
+          todos={filteredTodos}
           handleDeleteTodo={handleDeleteTodo}
           handleEditTodo={handleEditTodo}
           handleToggleComplete={handleToggleComplete}
